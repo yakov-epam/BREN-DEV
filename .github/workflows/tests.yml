@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:alpine
+        image: postgres
         env:
           POSTGRES_USER: dbuser
           POSTGRES_PASSWORD: password
