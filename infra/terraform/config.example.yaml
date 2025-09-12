@@ -1,0 +1,12 @@
+aws_region: eu-west-2
+project_name: books-api
+services:
+  - name: API
+    ecr_image_tag: latest
+    cpu: 10
+    ram: 256
+    essential: true
+    host_port: 80
+    container_port: 8080
+    desired_count: 1
+    healthcheck_path: /v1/health

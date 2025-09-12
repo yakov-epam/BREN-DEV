@@ -1,0 +1,53 @@
+[project]
+name = "brenntag"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.16.5",
+    "asyncpg>=0.30.0",
+    "fastapi>=0.116.1",
+    "granian>=2.5.2",
+    "greenlet>=3.2.4",
+    "httpx>=0.28.1",
+    "psycopg2-binary>=2.9.10",
+    "pydantic-settings>=2.10.1",
+    "pytest-asyncio>=1.1.0",
+    "python-dotenv>=1.1.1",
+    "sqlmodel>=0.0.24",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "requests>=2.32.5",
+    "ruff>=0.13.0",
+    "uvicorn>=0.35.0",
+]
+speedups = [
+    "orjson>=3.11.3",
+    "uvloop>=0.21.0",
+]
+
+[tool.ruff]
+exclude = [
+    ".git",
+    ".DS_Store",
+    ".venv",
+    ".idea",
+    ".pytest-cache",
+    "__pycache__",
+    ".ruff-cache",
+    ".mypy_cache",
+]
+line-length = 90
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = "src"
