@@ -25,6 +25,9 @@ class AppSettings(BaseModel):
     disable_swagger: bool = Field(default=False, title="Whether to disable swagger docs")
     disable_redoc: bool = Field(default=True, title="Whether to disable ReDoc docs")
     latest_v1: str = Field(default="1.0.0", title="Latest version of V1 API")
+    jwt_secret: str = Field(title="JWT secret")
+    jwt_exp_minutes: int = Field(default=60, title="JWT token lifetime in minutes")
+    jwt_algo: str = Field(default="HS256")
 
 
 class DBSettings(BaseModel):

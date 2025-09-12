@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:alpine
+        image: postgres
         env:
           POSTGRES_USER: dbuser
           POSTGRES_PASSWORD: password
@@ -18,10 +18,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Create a test .env file
-        run: echo -e "DB__HOST=\"localhost\"\nDB__NAME=\"test\"\nDB__USERNAME=\"dbuser\"\nDB__PASSWORD=\"password\"" > env/.env
+        run: echo -e "DB__HOST=\"127.0.0.1\"\nDB__NAME=\"test\"\nDB__USERNAME=\"dbuser\"\nDB__PASSWORD=\"password\"\nAPP__JWT_SECRET=\"d5c8a4ecf856a0b001ecff0b70e12d60\"" > env/.env
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -34,24 +39,26 @@ jobs:
       - name: Migrate & seed DB
         id: migrations
         run: |
-          echo "tests_pass=N" >> $GITHUB_OUTPUT
+          echo "tests_pass=FAILED" >> $GITHUB_OUTPUT
           uv run alembic upgrade head
-          echo "migrations_pass=Y" >> $GITHUB_OUTPUT
+          echo "migrations_pass=OK" >> $GITHUB_OUTPUT
         continue-on-error: true
 
       - name: Run Tests
         id: tests
         run: |
-          echo "tests_pass=N" >> $GITHUB_OUTPUT
+          echo "tests_pass=FAILED" >> $GITHUB_OUTPUT
           uv run pytest
-          echo "tests_pass=Y" >> $GITHUB_OUTPUT
+          echo "tests_pass=OK" >> $GITHUB_OUTPUT
         continue-on-error: true
 
       - name: Generate summary & Comment on PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: actions/github-script@v6
         with:
-          message: |
-            "| Check | Pass |"
-            "| --- | --- |"
-            "| Migrations | ${{ steps.migrations.outputs.migrations_pass }} |"
-            "| Tests | ${{ steps.tests.outputs.tests_pass }} |"
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: "Migrations: ${{ steps.migrations.outputs.migrations_pass }}\nTests: ${{ steps.tests.outputs.tests_pass }}"
+            })

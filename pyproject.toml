@@ -10,10 +10,14 @@ dependencies = [
     "granian>=2.5.2",
     "greenlet>=3.2.4",
     "httpx>=0.28.1",
+    "passlib[bcrypt]>=1.7.4",
     "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.10.1",
+    "pydantic[email]>=2.11.7",
+    "pyjwt>=2.10.1",
     "pytest-asyncio>=1.1.0",
     "python-dotenv>=1.1.1",
+    "python-multipart>=0.0.20",
     "sqlmodel>=0.0.24",
 ]
 
@@ -40,13 +44,14 @@ exclude = [
     "__pycache__",
     ".ruff-cache",
     ".mypy_cache",
+    "alembic"
 ]
 line-length = 90
 target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B"]
-ignore = ["B008"]
+ignore = ["B008", "B904"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

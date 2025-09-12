@@ -25,4 +25,5 @@ def create_v1_app() -> FastAPI:
     app_.add_exception_handler(HTTPException, error_handlers.handle_http_errors)  # noqa
     app_.include_router(resources.health.ROUTER)
     app_.include_router(resources.books.ROUTER)
+    app_.include_router(resources.users.ROUTER)
     return app_

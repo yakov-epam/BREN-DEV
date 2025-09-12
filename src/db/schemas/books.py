@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
+from db.schemas.base import BaseListResponse
 
 
 class BookBase(BaseModel):
@@ -27,6 +28,5 @@ class BookUpdate(BookBase):
     price: float | None = Field(default=None, ge=0, title="Price")
 
 
-class BookListResponse(BaseModel):
+class BookListResponse(BaseListResponse):
     items: list[Book] = Field(title="Book list", description="A list of book objects")
-    total_pages: int = Field(title="Total pages")

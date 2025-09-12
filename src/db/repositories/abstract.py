@@ -3,6 +3,7 @@ from typing import TypeVar, Any
 from sqlalchemy.orm import Session
 
 T = TypeVar("T")
+ModelT = TypeVar("ModelT")
 SchemaT = TypeVar("SchemaT")
 UpdateT = TypeVar("UpdateT")
 CreateT = TypeVar("CreateT")
@@ -34,26 +35,30 @@ class AbstractRepository(ABC):
         """
 
     @abstractmethod
-    async def get_one_by_property(self, name: str, value: Any) -> SchemaT | None:
+    async def get_one_by_property(
+        self, name: str, value: Any, raw: bool = False
+    ) -> SchemaT | ModelT | None:
         """
         Get one item by property.
         :param name: Property name.
         :param value: Property value.
+        :param raw: Return raw value.
         :return: Found item or None.
         """
 
-    async def get_one_by_id(self, id_: int) -> SchemaT | None:
+    async def get_one_by_id(self, id_: int, raw: bool = False) -> SchemaT | ModelT | None:
         """
         Get one item.
         A shortcut for `get_one_by_property`.
         Can also be used to check if item exists.
         :param id_: Item ID.
+        :param raw: Return raw value.
         :return: Found item or None.
         """
-        return await self.get_one_by_property("id", id_)
+        return await self.get_one_by_property("id", id_, raw=raw)
 
     @abstractmethod
-    async def create_one(self, data: CreateT) -> SchemaT:
+    async def create_one(self, data: CreateT) -> SchemaT | None:
         """
         Create one item.
         :param data: Item to create.
