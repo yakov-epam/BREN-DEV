@@ -53,9 +53,12 @@ jobs:
         continue-on-error: true
 
       - name: Generate summary & Comment on PR
-        uses: peter-evans/create-or-update-comment@v4
+        uses: actions/github-script@v6
         with:
-          issue-number: ${{ github.event.number }}
-          body: |
-            Migrations: ${{ steps.migrations.outputs.migrations_pass }}
-            Tests: ${{ steps.tests.outputs.tests_pass }}
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: "Migrations: ${{ steps.migrations.outputs.migrations_pass }}\nTests: ${{ steps.tests.outputs.tests_pass }}"
+            })
