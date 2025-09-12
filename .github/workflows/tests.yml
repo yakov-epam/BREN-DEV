@@ -55,6 +55,7 @@ jobs:
       - name: Generate summary & Comment on PR
         uses: peter-evans/create-or-update-comment@v4
         with:
+          issue-number: ${{ github.event.number }}
           body: |
             Migrations: ${{ steps.migrations.outputs.migrations_pass }}
             Tests: ${{ steps.tests.outputs.tests_pass }}
