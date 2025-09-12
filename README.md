@@ -30,6 +30,15 @@ When implementing this solution, I made a few assumptions, I believe it is impor
 You can find the `.env.example` configuration file under `env/` folder. \
 Read through the file and create a `.env` in the same folder.
 
+## Auth
+
+- User:
+  - username: `user`
+  - password: `useruser`
+- Admin:
+  - username: `admin`
+  - password: `adminadmin`
+
 ## Running the app
 
 ### With Docker, dev mode
@@ -39,6 +48,7 @@ This option gives a hot reload.
 
 1. Run `cd infra`.
 2. Run `docker compose up -d --build` (try `docker-compose` if `docker compose` doesn't work).
+3. Go to http://localhost:8080/v1/docs for docs.
 
 ### With Docker, prod mode
 
@@ -47,6 +57,7 @@ Follow this section to run the app in production mode (using `granian` instead o
 1. Run `cd infra`.
 2. Set `ENV=prod` in `env/.env`.
 3. Run `docker compose up -d --build` (try `docker-compose` if `docker compose` doesn't work).
+4. Go to http://localhost:8080/v1/docs for docs.
 
 ### Directly
 
@@ -59,6 +70,7 @@ Follow this section if you want to use an external database or debug the app.
 5. Optional for dev tools: Run `uv sync --group dev`.
 6. Run `cd src`.
 7. Run `uv run main.py`
+8. Go to http://localhost:8080/v1/docs for docs.
 
 ## IDE Setup (Pycharm example)
 

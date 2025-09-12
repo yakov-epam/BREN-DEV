@@ -1,14 +1,20 @@
 from fastapi import APIRouter, Query, Depends, Path, HTTPException
 from db.schemas.books import Book, BookCreate, BookUpdate, BookListResponse
-from db.repositories.books import BookRepository
+from db.repositories.books import BookRepository, get_repo
 from error_handlers.models import ErrorResponse
-from v1.resources.books import deps
 from math import ceil
+from v1.security import get_user, get_admin
+
 
 ROUTER = APIRouter(prefix="/books", tags=["Books"])
 
 
-@ROUTER.get("", name="List books", responses={200: {"model": Book}})
+@ROUTER.get(
+    "",
+    name="List books",
+    responses={200: {"model": Book}},
+    dependencies=[Depends(get_user)],
+)
 async def _(
     id_: int | None = Query(default=None, title="ID filter", gt=0, alias="id"),
     title: str | None = Query(
@@ -38,7 +44,7 @@ async def _(
     price_gt: int | None = Query(default=None, title="Price greater than filter", gt=0),
     limit: int = Query(default=100, title="Limit of items per page", gt=0),
     page: int = Query(default=1, title="Page", gt=0),
-    repo: BookRepository = Depends(deps.get_repo),
+    repo: BookRepository = Depends(get_repo),
 ):
     filters = {
         "id": id_,
@@ -69,10 +75,11 @@ async def _(
         200: {"model": Book},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
+    dependencies=[Depends(get_user)],
 )
 async def _(
     item_id: int = Path(title="Book ID", gt=0),
-    repo: BookRepository = Depends(deps.get_repo),
+    repo: BookRepository = Depends(get_repo),
 ):
     r = await repo.get_one_by_id(item_id)
     if not r:
@@ -80,12 +87,24 @@ async def _(
     return r
 
 
-@ROUTER.post("", name="Create book", responses={201: {"model": Book}}, status_code=201)
+@ROUTER.post(
+    "",
+    name="Create book",
+    responses={
+        201: {"model": Book},
+        409: {"model": ErrorResponse, "description": "Conflict"},
+    },
+    status_code=201,
+    dependencies=[Depends(get_admin)],
+)
 async def _(
     data: BookCreate,
-    repo: BookRepository = Depends(deps.get_repo),
+    repo: BookRepository = Depends(get_repo),
 ):
-    return await repo.create_one(data)
+    r = await repo.create_one(data)
+    if not r:
+        raise HTTPException(status_code=409, detail="Conflict")
+    return r
 
 
 @ROUTER.put(
@@ -95,11 +114,12 @@ async def _(
         200: {"model": Book},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
+    dependencies=[Depends(get_admin)],
 )
 async def _(
     data: BookUpdate,
     item_id: int = Path(title="Book ID", gt=0),
-    repo: BookRepository = Depends(deps.get_repo),
+    repo: BookRepository = Depends(get_repo),
 ):
     r = await repo.update_one(item_id, data)
     if not r:
@@ -114,10 +134,11 @@ async def _(
         200: {"model": Book},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
+    dependencies=[Depends(get_admin)],
 )
 async def _(
     item_id: int = Path(title="Book ID", gt=0),
-    repo: BookRepository = Depends(deps.get_repo),
+    repo: BookRepository = Depends(get_repo),
 ):
     r = await repo.delete_one(item_id)
     if not r:

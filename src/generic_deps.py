@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import AsyncGenerator
 
 
-async def get_db_session() -> AsyncGenerator[Session, None]:
+async def get_db_session() -> AsyncGenerator[Session]:
     """
     Database session dependency.
     :return: New database session.
