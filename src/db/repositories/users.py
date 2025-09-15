@@ -16,6 +16,11 @@ class UserRepository(
     GenericRepository[models.User, schemas.User, schemas.UserCreate, schemas.UserUpdate]
 ):
     async def create_one(self, data: schemas.UserCreate) -> schemas.User:
+        """
+        Create one user.
+        :param data: User to create.
+        :return: Created user.
+        """
         data.password = pwd_context.hash(data.password)
         return await super().create_one(data)
 
@@ -24,7 +29,7 @@ async def get_repo(
     session: Session = Depends(get_db_session),
 ) -> AsyncGenerator[UserRepository]:
     """
-    User repository dependency.
+    User repository FastAPI dependency.
     :param session: Database session.
     :return: New user repository instance.
     """
