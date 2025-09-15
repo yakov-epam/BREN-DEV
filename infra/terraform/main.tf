@@ -25,5 +25,7 @@ locals {
 
 # Configure the AWS Provider
 provider "aws" {
+  access_key = local.config["aws_access_key"]
+  secret_key = local.config["aws_secret_key"]
   region = local.config["aws_region"]
 }

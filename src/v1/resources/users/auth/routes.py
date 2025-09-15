@@ -15,7 +15,7 @@ ROUTER = APIRouter(prefix="/auth", tags=["Users"])
     "",
     name="Login",
     responses={
-        200: {"model": UserTokenResponse},
+        200: {"model": UserTokenResponse, "description": "Login successful"},
         401: {"model": ErrorResponse, "description": "Invalid credentials"},
     },
 )

@@ -12,7 +12,7 @@ ROUTER = APIRouter(prefix="/books", tags=["Books"])
 @ROUTER.get(
     "",
     name="List books",
-    responses={200: {"model": Book}},
+    responses={200: {"model": Book, "description": "OK"}},
     dependencies=[Depends(get_user)],
 )
 async def _(
@@ -72,7 +72,7 @@ async def _(
     "/{item_id}",
     name="Get one book",
     responses={
-        200: {"model": Book},
+        200: {"model": Book, "description": "OK"},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
     dependencies=[Depends(get_user)],
@@ -91,7 +91,7 @@ async def _(
     "",
     name="Create book",
     responses={
-        201: {"model": Book},
+        201: {"model": Book, "description": "OK"},
         409: {"model": ErrorResponse, "description": "Conflict"},
     },
     status_code=201,
@@ -111,7 +111,7 @@ async def _(
     "/{item_id}",
     name="Update book",
     responses={
-        200: {"model": Book},
+        200: {"model": Book, "description": "OK"},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
     dependencies=[Depends(get_admin)],
@@ -131,7 +131,7 @@ async def _(
     "/{item_id}",
     name="Delete book",
     responses={
-        200: {"model": Book},
+        200: {"model": Book, "description": "OK"},
         404: {"model": ErrorResponse, "description": "Book not found"},
     },
     dependencies=[Depends(get_admin)],

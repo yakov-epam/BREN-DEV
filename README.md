@@ -8,9 +8,9 @@ When implementing this solution, I made a few assumptions, I believe it is impor
 
 - ORM usage would be preferred over plain SQL with a custom connector.
 - Partial request implementation for PUT endpoint shouldn't be too complex.
-- There should be no "autogens" for better comprehension and lesser complexity, hence the list endpoint is a bit
-  spaghetti.
-- Swagger documentation will be used (therefore the app is optimized for it).
+- There should be no "autogens" for better comprehension and lesser complexity, hence the list endpoints are a bit
+  "spaghetti".
+- Swagger documentation will be used for testing (therefore the app is optimized for it).
 - The app will be hosted at AWS (yet I didn't test the Terraform configuration so it might be faulty if you run it).
 - A proper testing framework should be used instead of manually running test functions.
 - Automated tests will run in CI workflow(s) rather than locally.
@@ -20,7 +20,7 @@ When implementing this solution, I made a few assumptions, I believe it is impor
 
 ## Prerequisites
 
-- Docker engine (optionally Docker Desktop or similar).
+- Docker engine with compose plugin (optionally Docker Desktop or similar).
 - [uv Python package manager](https://docs.astral.sh/uv/getting-started/installation/) (for running directly only).
 - Linux, macOS or WSL.
 - A terminal emulator.
@@ -59,18 +59,22 @@ Follow this section to run the app in production mode (using `granian` instead o
 3. Run `docker compose up -d --build` (try `docker-compose` if `docker compose` doesn't work).
 4. Go to http://localhost:8080/v1/docs for docs.
 
+> Note: Test user accounts will not be created for prod mode. You will need to seed them to the DB manually.
+
 ### Directly
 
-Follow this section if you want to use an external database or debug the app.
+Follow this section if you want to debug the app or develop it further.
 
-1. Adjust `.env` to use your DB.
-2. Run `uv sync`.
-3. Apply migrations if necessary: `uv run alembic upgrade head`.
-4. Optional for speedups: Run `uv sync --group speedups`.
-5. Optional for dev tools: Run `uv sync --group dev`.
-6. Run `cd src`.
-7. Run `uv run main.py`
-8. Go to http://localhost:8080/v1/docs for docs.
+1. Follow steps from [With Docker, dev mode](#with-docker-dev-mode) section.
+2. Stop the app container.
+3. Run `uv sync`.
+4. Apply migrations if necessary: `uv run alembic upgrade head`.
+5. Optional for speedups: Run `uv sync --group speedups`.
+6. Optional for dev tools: Run `uv sync --group dev`.
+7. Run `cd src`.
+8. Run `uv run main.py`
+9. Go to http://localhost:8080/v1/docs for docs.
+10. Follow steps from [IDE Setup](#ide-setup-pycharm-example) if necessary.
 
 ## IDE Setup (Pycharm example)
 

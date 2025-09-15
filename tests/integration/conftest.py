@@ -28,6 +28,11 @@ def setup_database() -> Generator[None]:
 
 
 async def create_user(role: enums.UserRole) -> User:
+    """
+    Create a new user in the database.
+    :param role: User role.
+    :return: Created user schema.
+    """
     with DATABASE.session_maker() as session:
         item = UserModel(
             username=uuid4().hex,
@@ -42,12 +47,21 @@ async def create_user(role: enums.UserRole) -> User:
 
 
 @pytest.fixture(scope="function")
-async def create_user_user():
+async def create_user_user() -> User:
+    """
+    Create a new user with role "user" in the database.
+    :return: Created user schema.
+    """
     return await create_user(enums.UserRole.USER)
 
 
 @asynccontextmanager
 async def create_client(token: str | None) -> AsyncGenerator[httpx.AsyncClient]:
+    """
+    Create a new HTTP client.
+    :param token: Optional JWT token to use for auth.
+    :return: HTTP client instance.
+    """
     headers = {"Content-Type": "application/json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -74,6 +88,12 @@ async def http_client() -> AsyncGenerator[httpx.AsyncClient]:
 async def user_http_client(
     http_client: httpx.AsyncClient,
 ) -> AsyncGenerator[httpx.AsyncClient]:
+    """
+    HTTP client fixture, authorized as a user with "user" role.
+    Use this to make requests.
+    :param http_client: HTTP client instance.
+    :return: HTTP client instance.
+    """
     item = await create_user(role=enums.UserRole.USER)
     token = create_access_token({"sub": str(item.id)})
     async with create_client(token) as client:
@@ -84,6 +104,12 @@ async def user_http_client(
 async def admin_http_client(
     http_client: httpx.AsyncClient,
 ) -> AsyncGenerator[httpx.AsyncClient]:
+    """
+    HTTP client fixture, authorized as a user with "admin" role.
+    Use this to make requests.
+    :param http_client: HTTP client instance.
+    :return: HTTP client instance.
+    """
     item = await create_user(role=enums.UserRole.ADMIN)
     token = create_access_token({"sub": str(item.id)})
     async with create_client(token) as client:
@@ -91,7 +117,19 @@ async def admin_http_client(
 
 
 @pytest.fixture(scope="function")
-async def client(request, http_client, user_http_client, admin_http_client):
+async def client(
+    request, http_client, user_http_client, admin_http_client
+) -> AsyncGenerator[httpx.AsyncClient]:
+    """
+    Dynamic HTTP client fixture,
+    determining target user role based on passed param.
+    :param request: Pytest request object.
+    :param http_client: HTTP client instance.
+    :param user_http_client: HTTP client instance.
+    :param admin_http_client: HTTP client instance.
+    :return: HTTP client instance.
+    :raise: ValueError if provided user role is invalid.
+    """
     if request.param is None:
         yield http_client
     elif request.param == enums.UserRole.ADMIN:

@@ -13,7 +13,7 @@ ROUTER = APIRouter(prefix="/users", tags=["Users"])
 @ROUTER.get(
     "",
     name="List users",
-    responses={200: {"model": User}},
+    responses={200: {"model": User, "description": "OK"}},
     dependencies=[Depends(get_user)],
 )
 async def _(
@@ -53,7 +53,7 @@ async def _(
     "/{item_id}",
     name="Get one user",
     responses={
-        200: {"model": User},
+        200: {"model": User, "description": "OK"},
         404: {"model": ErrorResponse, "description": "User not found"},
     },
     dependencies=[Depends(get_user)],
@@ -72,7 +72,7 @@ async def _(
     "",
     name="Create user",
     responses={
-        201: {"model": User},
+        201: {"model": User, "description": "OK"},
         409: {"model": ErrorResponse, "description": "Username or email already taken"},
     },
     status_code=201,
@@ -94,7 +94,7 @@ async def _(
     "/{item_id}",
     name="Update user",
     responses={
-        200: {"model": User},
+        200: {"model": User, "description": "OK"},
         403: {"model": ErrorResponse, "description": "Unauthorized"},
         404: {"model": ErrorResponse, "description": "User not found or conflict"},
     },
@@ -117,7 +117,7 @@ async def _(
     "/{item_id}",
     name="Delete user",
     responses={
-        200: {"model": User},
+        200: {"model": User, "description": "OK"},
         404: {"model": ErrorResponse, "description": "User not found"},
     },
 )

@@ -11,19 +11,28 @@ import jwt
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/auth")
 
 
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
+    """
+    Create JWT access token for user.
+    :param data: Data to encode into the token.
+    :return: JWT access token.
+    """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=SETTINGS.app.jwt_exp_minutes)
     to_encode["exp"] = expire
-    encoded_jwt = jwt.encode(
-        to_encode, SETTINGS.app.jwt_secret, algorithm=SETTINGS.app.jwt_algo
-    )
-    return encoded_jwt
+    return jwt.encode(to_encode, SETTINGS.app.jwt_secret, algorithm=SETTINGS.app.jwt_algo)
 
 
 async def check_user_auth(
     token: str = Depends(oauth2_scheme), repo: UserRepository = Depends(get_repo)
 ) -> User:
+    """
+    Check if user is authenticated.
+    :param token: JWT token.
+    :param repo: User repository.
+    :return: User object.
+    :raise: HTTPException if user not authenticated.
+    """
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
@@ -44,13 +53,25 @@ async def check_user_auth(
     return user
 
 
-async def get_user(user: User = Depends(check_user_auth)):
+async def get_user(user: User = Depends(check_user_auth)) -> User:
+    """
+    Check if user has "user" or "admin" role.
+    Use as access-restricting FastAPI dependency.
+    :param user: User object.
+    :return: User object.
+    """
     if user.role not in (enums.UserRole.USER, enums.UserRole.ADMIN):
         raise HTTPException(status_code=403, detail="Unauthorized")
     return user
 
 
-async def get_admin(user: User = Depends(check_user_auth)):
+async def get_admin(user: User = Depends(check_user_auth)) -> User:
+    """
+    Check if user has "admin" role.
+    Use as access-restricting FastAPI dependency.
+    :param user: User object.
+    :return: User object.
+    """
     if user.role != enums.UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Unauthorized")
     return user
